@@ -34,7 +34,7 @@ def get_by_id(id: int, res: Response, service = Depends(products_service)) -> Pr
 
 @r.put('/{id}')
 def update(id: int, product_update: ProductUpdate, service = Depends(products_service)):
-    product_out: ProductOut | None = service.update(id, product_update)
+    product_out: ProductOut | None = service.update(id=id, product_update=product_update)
     if product_out is None:
         raise HTTPException(400, "The product does not exits")
     return product_out

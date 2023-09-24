@@ -18,9 +18,10 @@ class Repository(Generic[T]):
     
     #Get all records from db by an optional criterion, by default criterion is search if status is true
     def get_all(self, criterion: ColumnExpressionArgument[bool] | None = None) -> List[T]:
+        default_criterion = self.default_criterion
         if criterion is not None:
-            return self.query.filter(criterion).all()
-        else: return self.query.filter(self.default_criterion).all()
+            default_criterion = criterion
+        return self.query.filter(default_criterion).all()
 
     #Get all records from db by an optional criterion, offset, and limit, the default criterion is search by status is true, the default offset is 0 and the default limit is 10
     def get_all_page(
@@ -30,13 +31,13 @@ class Repository(Generic[T]):
         criterion: ColumnExpressionArgument[bool] | None = None) -> Page[T]:
         offset: int = 0
         limit: int = 10
+        default_criterion = self.default_criterion
         if offset_op is not None: offset = offset_op
         if limit_op is not None and limit_op > 0: limit = limit_op
         if criterion is not None:
-            self.query.filter(criterion)
-        else: self.query.filter(self.default_criterion)
-        elements: List[T] = self.query.order_by('id').offset(offset).limit(limit).all()
-        total_items = self.query.count()
+            default_criterion = criterion
+        elements: List[T] = self.query.filter(default_criterion).order_by('id').offset(offset).limit(limit).all()
+        total_items = self.query.filter(default_criterion).count()
         return Page[T](
             elements = elements,
             total_items = total_items

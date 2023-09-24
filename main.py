@@ -2,7 +2,9 @@ from fastapi import FastAPI, APIRouter
 from app.routers.api import products
 from typing import List
 
-app = FastAPI()
+app = FastAPI(
+   title="Products Api"
+)
 
 routers: List[APIRouter] = [products.r]
 for router in routers:

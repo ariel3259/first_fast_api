@@ -8,7 +8,6 @@ from datetime import datetime
 class ProductsService:
     products_repository: Repository[Products]
     def __init__(self):
-
         self.products_repository = ProductsReposisotry()
     
     def get_all(self, offset: int | None = None, limit: int | None = None) -> Page[ProductOut]:
@@ -53,12 +52,12 @@ class ProductsService:
         )
     
     def update(self, product_update: ProductUpdate, id: int) -> ProductUpdate | None:
-        product: Products = self.products_repository.get_by_id(id=id)
+        product_dict = product_update.dict(exclude_unset=True)
+        product: Products = self.products_repository.get_one_by(Products.id == id and Products.status is True)
         if product is None:
             return None
-        product.name = product_update.name is not None and product_update.name != product.name if product_update.name else product.name
-        product.stock = product_update.stock is not None and product_update.stock != product.stock if product_update.stock else product.stock
-        product.price = product_update.price is not None and product_update.price != product.price if product_update.price else product.price
+        for key in product_dict.keys():
+            setattr(product, key, product_dict[key])
         product.updated_at = datetime.today()
         product_updated = self.products_repository.persist(product)
         return ProductOut(
@@ -69,8 +68,9 @@ class ProductsService:
         )
 
     def delete(self, id: int) -> bool:
-        product: Products = self.products_repository.get_by_id(id=id)
+        product: Products = self.products_repository.get_one_by(Products.id == id and Products.status is True)
         if product is None:
             return False
         product.status = False
+        print(product.__dict__)
         self.products_repository.persist(record=product)
