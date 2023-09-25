@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session, Query
 from sqlalchemy import ColumnExpressionArgument
 from typing import Optional, TypeVar, Generic, List
-from app.database.models import Base
+from app.db.models import Base
 from app.dto.schemas import Page
 
 T = TypeVar('T', bound=Base)

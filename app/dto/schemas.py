@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Generic, TypeVar, List
-from app.database.models import Products
+from typing import Generic, TypeVar, List
 
 T = TypeVar('T')
 
@@ -24,3 +23,16 @@ class ProductUpdate(BaseModel):
     name: str | None = None
     price: float | None = None
     stock: int | None = None
+
+class UsersIn(BaseModel):
+    name: str
+    lastname: str
+    email: str
+    password: str
+
+class LogInOut(BaseModel):
+    access_token: str
+    type: str
+
+class TokenData(BaseModel):
+    username: str

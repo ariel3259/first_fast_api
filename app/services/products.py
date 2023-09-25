@@ -1,6 +1,6 @@
 from app.repositories.repository import Repository
 from app.repositories.products import ProductsReposisotry
-from app.database.models import Products
+from app.db.models import Products
 from app.dto.schemas import ProductBase, ProductOut, ProductUpdate, Page
 from typing import Optional, List
 from datetime import datetime
@@ -34,14 +34,14 @@ class ProductsService:
             stock = product.stock
        )
     
-    def create(self, product_base: ProductBase) -> ProductOut:
+    def create(self, product_base: ProductBase, username: str) -> ProductOut:
         product = self.products_repository.persist(
             Products(
                 name = product_base.name,
                 price = product_base.price,
                 stock = product_base.stock,
-                created_by = "system",
-                updated_by = "system"
+                created_by = username,
+                updated_by = username
             )
         )
         return ProductOut(
@@ -51,14 +51,15 @@ class ProductsService:
             stock = product.stock
         )
     
-    def update(self, product_update: ProductUpdate, id: int) -> ProductUpdate | None:
-        product_dict = product_update.dict(exclude_unset=True)
+    def update(self, product_update: ProductUpdate, id: int, username: str) -> ProductUpdate | None:
+        product_dict = product_update.model_dump(exclude_unset=True)
         product: Products = self.products_repository.get_one_by(Products.id == id and Products.status is True)
         if product is None:
             return None
         for key in product_dict.keys():
             setattr(product, key, product_dict[key])
         product.updated_at = datetime.today()
+        product.updated_by = username
         product_updated = self.products_repository.persist(product)
         return ProductOut(
             id = product_updated.id,

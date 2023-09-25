@@ -17,3 +17,10 @@ class Products(Base):
     stock: Mapped[int] = mapped_column(Integer)
 
 
+class Users(Base):
+    __tablename__ = "users"
+    name: Mapped[str] = mapped_column(String(50))
+    lastname: Mapped[str] = mapped_column(String(50))
+    email: Mapped[str] = mapped_column(String(100), unique=True)
+    password: Mapped[str] = mapped_column(String(100))
+
